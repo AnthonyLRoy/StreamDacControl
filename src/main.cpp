@@ -8,8 +8,10 @@ extern "C" void app_main(void)
     esp_event_loop_create_default();
     nvs_flash_init();
     gpio_install_isr_service(0);
+    
 
     myMain.init_controls();
+    myMain.RegisterEvents();
 
     while (true)
     {
@@ -26,5 +28,16 @@ esp_err_t main::run()
 
 esp_err_t main::init_controls()
 {
+    controlLibrary::control* fred = new controlLibrary::control;
+    int result =  controlLibrary::controls::Add( fred);
+   
+
+
+    return ESP_OK;
+}
+
+esp_err_t main::RegisterEvents()
+{
+
     return ESP_OK;
 }

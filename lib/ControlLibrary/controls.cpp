@@ -3,8 +3,8 @@
 namespace controlLibrary
 {
   
-   int controls::Add()
+   int controls::Add( control &newcontrol)
    {
-        return 4;
+        return 1;
    };
 }
