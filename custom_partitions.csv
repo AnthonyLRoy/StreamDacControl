@@ -1,0 +1,6 @@
+# Name,   Type, SubType, Offset,  Size, Flags
+factory,  app,  factory,  0x10000,  3M
+wifi,     data, nvs,      ,         0x1000
+phy_init, data, phy,      ,         0x2000
+nvs,      data, nvs,      ,         0x5000
+nvs_key,  data, nvs_keys, ,         0x2000

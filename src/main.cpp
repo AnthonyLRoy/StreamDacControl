@@ -15,5 +15,5 @@ esp_err_t main::run()
 {
 
     //  register the event handlers
-
-}
+    return ESP_OK;
+};
