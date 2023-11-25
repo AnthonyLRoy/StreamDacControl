@@ -5,8 +5,15 @@
 #include "esp_event.h"
 #include "nvs_flash.h"
 #include "esp_log.h"
+#include "driver\gpio.h"
+
 
 class main final
 {
-    esp_err_t run();
+    public:
+        esp_err_t run();
+        esp_err_t init_controls();
 };
+
+
+
