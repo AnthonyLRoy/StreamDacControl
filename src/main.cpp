@@ -1,5 +1,6 @@
 #include "main.h"
 #include "controls.h"
+#include "handlers.h"
 
 extern "C" void app_main(void)
 {
@@ -28,6 +29,11 @@ esp_err_t main::run()
 
 esp_err_t main::init_controls()
 {
+
+       controlLibrary::control* control =  new controlLibrary::control();
+       controlLibrary::controls::Add(control);
+       gpio_isr_handler_add(control->GetId(),handlers::buttonHandler::button_isr_handler, (void*)control->GetId());
+
       //controlLibrary::control* fred = new streamerControls::GenericButton(GPIO_NUM_17,controlLibrary::BUTTON_NEXT,GPIO_INTR_POSEDGE);
     return ESP_OK;
 };

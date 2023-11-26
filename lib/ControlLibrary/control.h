@@ -11,6 +11,7 @@ namespace controlLibrary
   class control
   {
     public:
+        control();
         gpio_num_t virtual GetId();
         static void configure();
     private:

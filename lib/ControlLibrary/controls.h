@@ -10,7 +10,7 @@ namespace controlLibrary
     {
         public:
          controls(void) {};
-         static esp_err_t  Add(control *newcontrol);
+         static controlLibrary::control  Add(control *newcontrol);
     };
 
     static std::map<uint16_t, controlLibrary::control> controlList;
