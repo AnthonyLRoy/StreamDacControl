@@ -2,9 +2,9 @@
 
 namespace controlLibrary
 {
-  
-   int controls::Add( control &newcontrol)
+
+   esp_err_t  controls::Add(control *newcontrol)
    {
-        return 1;
-   };
-}
+      return ESP_OK;
+   }
+} // namespace controlLibrary

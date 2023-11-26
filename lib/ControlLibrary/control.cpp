@@ -8,11 +8,14 @@ namespace controlLibrary
         return "danny";
     };
 
-    virtual esp_err_t control::ProcessEvent()
+    esp_err_t control::ProcessEvent()
     {
-    }
+        return ESP_ERR_NOT_SUPPORTED;
+    };
     
-    virtual esp_err_t control::RegisterEvents()
-    {
-    }
+    esp_err_t control::RegisterEvents()
+    { 
+        return ESP_ERR_NOT_SUPPORTED;
+    };
+    
 } // namespace controlLibrary
