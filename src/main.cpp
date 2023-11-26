@@ -16,8 +16,8 @@ extern "C" void app_main(void)
     while (true)
     {
         myMain.run();
-    }
-}
+    };
+};
 
 esp_err_t main::run()
 {
@@ -28,16 +28,11 @@ esp_err_t main::run()
 
 esp_err_t main::init_controls()
 {
-    controlLibrary::control* fred = new controlLibrary::control;
-    int result =  controlLibrary::controls::Add( fred);
-   
-
-
+      //controlLibrary::control* fred = new streamerControls::GenericButton(GPIO_NUM_17,controlLibrary::BUTTON_NEXT,GPIO_INTR_POSEDGE);
     return ESP_OK;
-}
+};
 
 esp_err_t main::RegisterEvents()
 {
-
     return ESP_OK;
-}
+};
