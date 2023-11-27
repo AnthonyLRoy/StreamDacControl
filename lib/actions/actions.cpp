@@ -11,7 +11,10 @@ namespace actions
         void button_on_off::handle(){};
         void button_play::handle(){};
         void button_pause::handle(){};
-        void button_next::handle(){};
+        void button_next::handle(){
+
+            //Send Next Cmd 
+        };
         void button_previous::handle(){};
 
 } // namespace handlers
