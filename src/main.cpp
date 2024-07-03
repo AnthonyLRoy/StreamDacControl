@@ -32,7 +32,7 @@ esp_err_t main::init_controls()
 
        controlLibrary::control* control =  new controlLibrary::control();
        controlLibrary::controls::Add(control);
-       gpio_isr_handler_add(control->GetId(),handlers::buttonHandler::button_isr_handler, (void*)control->GetId());
+       gpio_isr_handler_add(control->GetId(),handlers::buttonHandler::button_isr_handler, (void*)control);
 
       //controlLibrary::control* fred = new streamerControls::GenericButton(GPIO_NUM_17,controlLibrary::BUTTON_NEXT,GPIO_INTR_POSEDGE);
     return ESP_OK;

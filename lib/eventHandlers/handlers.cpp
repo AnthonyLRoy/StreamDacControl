@@ -22,4 +22,3 @@ static int state;
     }
 */
 } // namespace handlers
-
