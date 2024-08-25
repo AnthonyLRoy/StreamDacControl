@@ -10,6 +10,4 @@ namespace controlLibrary
     {
         return _id;
     };
-
-
 } // namespace controlLibrary
