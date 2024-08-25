@@ -4,13 +4,11 @@ namespace controlLibrary
     {
         ROTARY_CONTROLLER_RIGHT,
         ROTARY_CONTROLLER_LEFT,
-        BUTTON_SELECT,
-        BUTTON_BACK,
-        BUTTON_ON_OFF_SHORT,
-        BUTTON_ON_OFF_LONG,
+        ROTARY_CONTROLLER_SELECT,
         BUTTON_PLAY,
         BUTTON_PAUSE,
         BUTTON_NEXT,
-        BUTTON_PREVIOUS
+        BUTTON_PREVIOUS,
+
     };
 };
