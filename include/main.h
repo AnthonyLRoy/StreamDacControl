@@ -11,7 +11,7 @@
 class main final
 {
     public:
-        esp_err_t run();
+        void run();
         esp_err_t init_controls();
         esp_err_t RegisterEvents();
 };
