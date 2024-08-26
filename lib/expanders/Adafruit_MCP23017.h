@@ -23,7 +23,7 @@
 class Adafruit_MCP23017 {
 public:
   
-  esp_err_t init(gpio_num_t sda, gpio_num_t scl, int address, int freq, i2c_port_t portnumber);
+  esp_err_t init(gpio_num_t sda, gpio_num_t scl, uint8_t address, uint32_t freq, i2c_port_t portnumber);
   void pinMode(uint8_t p, uint8_t d);
   void digitalWrite(uint8_t p, uint8_t d);
   void pullUp(uint8_t p, uint8_t d);

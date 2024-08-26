@@ -1,4 +1,4 @@
-/*************************************************** 
+/***************************************************
  This is a library for the MCP23017 i2c port expander
 
  These displays use I2C to communicate, 2 pins are required to
@@ -13,90 +13,94 @@
 
 #include "Adafruit_MCP23017.h"
 
-
-static int bitRead(uint32_t x, uint8_t n) {
-	return ((x & 1<<n) != 0);
+static int bitRead(uint32_t x, uint8_t n)
+{
+    return ((x & 1 << n) != 0);
 }
 
-static uint32_t bitWrite(uint32_t x, uint8_t n, uint8_t b) {
-	return ((x & (~(1<< n))) | (b << n));
+static uint32_t bitWrite(uint32_t x, uint8_t n, uint8_t b)
+{
+    return ((x & (~(1 << n))) | (b << n));
 }
 
 /**
  * Bit number associated to a give Pin
  */
-uint8_t Adafruit_MCP23017::bitForPin(uint8_t pin){
-	return pin%8;
+uint8_t Adafruit_MCP23017::bitForPin(uint8_t pin)
+{
+    return pin % 8;
 }
 
 /**
  * Register address, port dependent, for a given PIN
  */
-uint8_t Adafruit_MCP23017::regForPin(uint8_t pin, uint8_t portAaddr, uint8_t portBaddr){
-	return (pin<8)?portAaddr:portBaddr;
+uint8_t Adafruit_MCP23017::regForPin(uint8_t pin, uint8_t portAaddr, uint8_t portBaddr)
+{
+    return (pin < 8) ? portAaddr : portBaddr;
 }
 
 /**
  * Reads a given register
  */
-uint8_t Adafruit_MCP23017::readRegister(uint8_t addr){
-	// read the current GPINTEN
-	//Wire.beginTransmission(MCP23017_ADDRESS | i2caddr);
-	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-	i2c_master_start(cmd);
-	i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
-	//wiresend(addr);
-	i2c_master_write_byte(cmd, addr, 1);
-	//Wire.endTransmission();
-	i2c_master_stop(cmd);
-	i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
-	i2c_cmd_link_delete(cmd);
-	//Wire.requestFrom(MCP23017_ADDRESS | i2caddr, 1);
-	cmd = i2c_cmd_link_create();
-	i2c_master_start(cmd);
-	i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_READ, 1 /* expect ack */);
-	uint8_t tmpByte;
-	i2c_master_read_byte(cmd, &tmpByte, I2C_MASTER_NACK);
-	i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
-	i2c_cmd_link_delete(cmd);
-	return tmpByte;
+uint8_t Adafruit_MCP23017::readRegister(uint8_t addr)
+{
+    // read the current GPINTEN
+    // Wire.beginTransmission(MCP23017_ADDRESS | i2caddr);
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
+    // wiresend(addr);
+    i2c_master_write_byte(cmd, addr, 1);
+    // Wire.endTransmission();
+    i2c_master_stop(cmd);
+    i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
+    i2c_cmd_link_delete(cmd);
+    // Wire.requestFrom(MCP23017_ADDRESS | i2caddr, 1);
+    cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_READ, 1 /* expect ack */);
+    uint8_t tmpByte;
+    i2c_master_read_byte(cmd, &tmpByte, I2C_MASTER_NACK);
+    i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
+    i2c_cmd_link_delete(cmd);
+    return tmpByte;
 }
-
 
 /**
  * Writes a given register
  */
-void Adafruit_MCP23017::writeRegister(uint8_t regAddr, uint8_t regValue){
-	// Write the register
-	//Wire.beginTransmission(MCP23017_ADDRESS | i2caddr);
-	//wiresend(regAddr);
-	//wiresend(regValue);
-	//Wire.endTransmission();
-	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-	i2c_master_start(cmd);
-	i2c_master_write_byte(cmd, (_address << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
-	i2c_master_write_byte(cmd, regAddr, 1);
-	i2c_master_write_byte(cmd, regValue, 1);
-	i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
-	i2c_cmd_link_delete(cmd);
+void Adafruit_MCP23017::writeRegister(uint8_t regAddr, uint8_t regValue)
+{
+    // Write the register
+    // Wire.beginTransmission(MCP23017_ADDRESS | i2caddr);
+    // wiresend(regAddr);
+    // wiresend(regValue);
+    // Wire.endTransmission();
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (_address << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
+    i2c_master_write_byte(cmd, regAddr, 1);
+    i2c_master_write_byte(cmd, regValue, 1);
+    i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
+    i2c_cmd_link_delete(cmd);
 }
-
 
 /**
  * Helper to update a single bit of an A/B register.
  * - Reads the current register value
  * - Writes the new register value
  */
-void Adafruit_MCP23017::updateRegisterBit(uint8_t pin, uint8_t pValue, uint8_t portAaddr, uint8_t portBaddr) {
-	uint8_t regValue;
-	uint8_t regAddr=regForPin(pin,portAaddr,portBaddr);
-	uint8_t bit=bitForPin(pin);
-	regValue = readRegister(regAddr);
+void Adafruit_MCP23017::updateRegisterBit(uint8_t pin, uint8_t pValue, uint8_t portAaddr, uint8_t portBaddr)
+{
+    uint8_t regValue;
+    uint8_t regAddr = regForPin(pin, portAaddr, portBaddr);
+    uint8_t bit = bitForPin(pin);
+    regValue = readRegister(regAddr);
 
-	// set the value for the particular bit
-	regValue = bitWrite(regValue,bit,pValue);
+    // set the value for the particular bit
+    regValue = bitWrite(regValue, bit, pValue);
 
-	writeRegister(regAddr,regValue);
+    writeRegister(regAddr, regValue);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -110,8 +114,8 @@ void Adafruit_MCP23017::updateRegisterBit(uint8_t pin, uint8_t pValue, uint8_t p
 // 	}
 // 	i2caddr = addr;
 
- 	// writeRegister(MCP23017_IODIRA,0xff);
- 	// writeRegister(MCP23017_IODIRB,0xff);
+// writeRegister(MCP23017_IODIRA,0xff);
+// writeRegister(MCP23017_IODIRB,0xff);
 // }
 
 /**
@@ -121,144 +125,154 @@ void Adafruit_MCP23017::updateRegisterBit(uint8_t pin, uint8_t pValue, uint8_t p
 /**
  * Sets the pin mode to either INPUT or OUTPUT
  */
-void Adafruit_MCP23017::pinMode(uint8_t p, uint8_t d) {
-	updateRegisterBit(p,(d==GPIO_MODE_INPUT),MCP23017_IODIRA,MCP23017_IODIRB);
+void Adafruit_MCP23017::pinMode(uint8_t p, uint8_t d)
+{
+    updateRegisterBit(p, (d == GPIO_MODE_INPUT), MCP23017_IODIRA, MCP23017_IODIRB);
 }
 
 /**
  * Reads all 16 pins (port A and B) into a single 16 bits variable.
  */
-uint16_t Adafruit_MCP23017::readGPIOAB() {
-	uint16_t ba = 0;
-	uint8_t a;
+uint16_t Adafruit_MCP23017::readGPIOAB()
+{
+    uint16_t ba = 0;
+    uint8_t a;
 
-	// read the current GPIO output latches
-	/*
-	Wire.beginTransmission(MCP23017_ADDRESS | i2caddr);
-	wiresend(MCP23017_GPIOA);
-	Wire.endTransmission();
-	*/
+    // read the current GPIO output latches
+    /*
+    Wire.beginTransmission(MCP23017_ADDRESS | i2caddr);
+    wiresend(MCP23017_GPIOA);
+    Wire.endTransmission();
+    */
 
-	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-	i2c_master_start(cmd);
-	i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
-	i2c_master_write_byte(cmd, MCP23017_GPIOA, 1);
-	i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
-	i2c_cmd_link_delete(cmd);
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
+    i2c_master_write_byte(cmd, MCP23017_GPIOA, 1);
+    i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
+    i2c_cmd_link_delete(cmd);
 
-	/*
-	Wire.requestFrom(MCP23017_ADDRESS | i2caddr, 2);
+    /*
+    Wire.requestFrom(MCP23017_ADDRESS | i2caddr, 2);
 
-	a = wirerecv();
-	ba = wirerecv();
-	ba <<= 8;
-	ba |= a;
-	*/
+    a = wirerecv();
+    ba = wirerecv();
+    ba <<= 8;
+    ba |= a;
+    */
 
-	cmd = i2c_cmd_link_create();
-	i2c_master_start(cmd);
-	i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_READ, 1 /* expect ack */);
-	i2c_master_read_byte(cmd, &a, I2C_MASTER_NACK);
-	i2c_master_read_byte(cmd, (uint8_t *)&ba,I2C_MASTER_NACK);
-	i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
-	i2c_cmd_link_delete(cmd);
+    cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_READ, 1 /* expect ack */);
+    i2c_master_read_byte(cmd, &a, I2C_MASTER_NACK);
+    i2c_master_read_byte(cmd, (uint8_t *)&ba, I2C_MASTER_NACK);
+    i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
+    i2c_cmd_link_delete(cmd);
 
-	ba <<= 8;
-	ba |= a;
+    ba <<= 8;
+    ba |= a;
 
-	return ba;
+    return ba;
 }
 
 /**
  * Read a single port, A or B, and return its current 8 bit value.
  * Parameter b should be 0 for GPIOA, and 1 for GPIOB.
  */
-uint8_t Adafruit_MCP23017::readGPIO(uint8_t b) {
+uint8_t Adafruit_MCP23017::readGPIO(uint8_t b)
+{
 
-	// read the current GPIO output latches
-	/*
-	Wire.beginTransmission(MCP23017_ADDRESS | i2caddr);
-	if (b == 0)
-		wiresend(MCP23017_GPIOA);
-	else {
-		wiresend(MCP23017_GPIOB);
-	}
-	Wire.endTransmission();
-	*/
+    // read the current GPIO output latches
+    /*
+    Wire.beginTransmission(MCP23017_ADDRESS | i2caddr);
+    if (b == 0)
+        wiresend(MCP23017_GPIOA);
+    else {
+        wiresend(MCP23017_GPIOB);
+    }
+    Wire.endTransmission();
+    */
 
-	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-	i2c_master_start(cmd);
-	i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
-	if (b == 0) {
-		i2c_master_write_byte(cmd, MCP23017_GPIOA, 1);
-	} else {
-		i2c_master_write_byte(cmd, MCP23017_GPIOB, 1);
-	}
-	i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
-	i2c_cmd_link_delete(cmd);
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
+    if (b == 0)
+    {
+        i2c_master_write_byte(cmd, MCP23017_GPIOA, 1);
+    }
+    else
+    {
+        i2c_master_write_byte(cmd, MCP23017_GPIOB, 1);
+    }
+    i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
+    i2c_cmd_link_delete(cmd);
 
-	/*
-	Wire.requestFrom(MCP23017_ADDRESS | i2caddr, 1);
-	return wirerecv();
-	*/
+    /*
+    Wire.requestFrom(MCP23017_ADDRESS | i2caddr, 1);
+    return wirerecv();
+    */
 
-	uint8_t byte;
-	cmd = i2c_cmd_link_create();
-	i2c_master_start(cmd);
-	i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_READ, 1 /* expect ack */);
-	i2c_master_read_byte(cmd, &byte, I2C_MASTER_NACK);
-	i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
-	i2c_cmd_link_delete(cmd);
-	return byte;
+    uint8_t byte;
+    cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_READ, 1 /* expect ack */);
+    i2c_master_read_byte(cmd, &byte, I2C_MASTER_NACK);
+    i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
+    i2c_cmd_link_delete(cmd);
+    return byte;
 }
 
 /**
- * Writes all the pins in one go. This method is very useful if you are implementing a multiplexed matrix and want to get a decent refresh rate.
+ * Writes all the pins in one go. This method is very useful if you are implementing a multiplexed matrix and want to
+ * get a decent refresh rate.
  */
-void Adafruit_MCP23017::writeGPIOAB(uint16_t ba) {
-	/*
-	Wire.beginTransmission(MCP23017_ADDRESS | i2caddr);
-	wiresend(MCP23017_GPIOA);
-	wiresend(ba & 0xFF);
-	wiresend(ba >> 8);
-	Wire.endTransmission();
-	*/
+void Adafruit_MCP23017::writeGPIOAB(uint16_t ba)
+{
+    /*
+    Wire.beginTransmission(MCP23017_ADDRESS | i2caddr);
+    wiresend(MCP23017_GPIOA);
+    wiresend(ba & 0xFF);
+    wiresend(ba >> 8);
+    Wire.endTransmission();
+    */
 
-	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-	i2c_master_start(cmd);
-	i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
-	i2c_master_write_byte(cmd, MCP23017_GPIOA, 1);
-	i2c_master_write_byte(cmd, ba & 0xFF, 1);
-	i2c_master_write_byte(cmd, ba >> 8, 1);
-	i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
-	i2c_cmd_link_delete(cmd);
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_WRITE, 1 /* expect ack */);
+    i2c_master_write_byte(cmd, MCP23017_GPIOA, 1);
+    i2c_master_write_byte(cmd, ba & 0xFF, 1);
+    i2c_master_write_byte(cmd, ba >> 8, 1);
+    i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
+    i2c_cmd_link_delete(cmd);
 }
 
-void Adafruit_MCP23017::digitalWrite(uint8_t pin, uint8_t d) {
-	uint8_t gpio;
-	uint8_t bit=bitForPin(pin);
+void Adafruit_MCP23017::digitalWrite(uint8_t pin, uint8_t d)
+{
+    uint8_t gpio;
+    uint8_t bit = bitForPin(pin);
 
+    // read the current GPIO output latches
+    uint8_t regAddr = regForPin(pin, MCP23017_OLATA, MCP23017_OLATB);
+    gpio = readRegister(regAddr);
 
-	// read the current GPIO output latches
-	uint8_t regAddr=regForPin(pin,MCP23017_OLATA,MCP23017_OLATB);
-	gpio = readRegister(regAddr);
+    // set the pin and direction
+    gpio = bitWrite(gpio, bit, d);
 
-	// set the pin and direction
-	gpio = bitWrite(gpio,bit,d);
-
-	// write the new GPIO
-	regAddr=regForPin(pin,MCP23017_GPIOA,MCP23017_GPIOB);
-	writeRegister(regAddr,gpio);
+    // write the new GPIO
+    regAddr = regForPin(pin, MCP23017_GPIOA, MCP23017_GPIOB);
+    writeRegister(regAddr, gpio);
 }
 
-void Adafruit_MCP23017::pullUp(uint8_t p, uint8_t d) {
-	updateRegisterBit(p,d,MCP23017_GPPUA,MCP23017_GPPUB);
+void Adafruit_MCP23017::pullUp(uint8_t p, uint8_t d)
+{
+    updateRegisterBit(p, d, MCP23017_GPPUA, MCP23017_GPPUB);
 }
 
-uint8_t Adafruit_MCP23017::digitalRead(uint8_t pin) {
-	uint8_t bit=bitForPin(pin);
-	uint8_t regAddr=regForPin(pin,MCP23017_GPIOA,MCP23017_GPIOB);
-	return (readRegister(regAddr) >> bit) & 0x1;
+uint8_t Adafruit_MCP23017::digitalRead(uint8_t pin)
+{
+    uint8_t bit = bitForPin(pin);
+    uint8_t regAddr = regForPin(pin, MCP23017_GPIOA, MCP23017_GPIOB);
+    return (readRegister(regAddr) >> bit) & 0x1;
 }
 
 /**
@@ -270,20 +284,21 @@ uint8_t Adafruit_MCP23017::digitalRead(uint8_t pin) {
  * If you are connecting the INTA/B pin to arduino 2/3, you should configure the interupt handling as FALLING with
  * the default configuration.
  */
-void Adafruit_MCP23017::setupInterrupts(uint8_t mirroring, uint8_t openDrain, uint8_t polarity){
-	// configure the port A
-	uint8_t ioconfValue=readRegister(MCP23017_IOCONA);
-	ioconfValue = bitWrite(ioconfValue,6,mirroring);
-	ioconfValue = bitWrite(ioconfValue,2,openDrain);
-	ioconfValue = bitWrite(ioconfValue,1,polarity);
-	writeRegister(MCP23017_IOCONA,ioconfValue);
+void Adafruit_MCP23017::setupInterrupts(uint8_t mirroring, uint8_t openDrain, uint8_t polarity)
+{
+    // configure the port A
+    uint8_t ioconfValue = readRegister(MCP23017_IOCONA);
+    ioconfValue = bitWrite(ioconfValue, 6, mirroring);
+    ioconfValue = bitWrite(ioconfValue, 2, openDrain);
+    ioconfValue = bitWrite(ioconfValue, 1, polarity);
+    writeRegister(MCP23017_IOCONA, ioconfValue);
 
-	// Configure the port B
-	ioconfValue=readRegister(MCP23017_IOCONB);
-	ioconfValue = bitWrite(ioconfValue,6,mirroring);
-	ioconfValue = bitWrite(ioconfValue,2,openDrain);
-	ioconfValue = bitWrite(ioconfValue,1,polarity);
-	writeRegister(MCP23017_IOCONB,ioconfValue);
+    // Configure the port B
+    ioconfValue = readRegister(MCP23017_IOCONB);
+    ioconfValue = bitWrite(ioconfValue, 6, mirroring);
+    ioconfValue = bitWrite(ioconfValue, 2, openDrain);
+    ioconfValue = bitWrite(ioconfValue, 1, polarity);
+    writeRegister(MCP23017_IOCONB, ioconfValue);
 }
 
 /**
@@ -293,77 +308,90 @@ void Adafruit_MCP23017::setupInterrupts(uint8_t mirroring, uint8_t openDrain, ui
  * that caused the interrupt or you read the port itself. Check the datasheet can be confusing.
  *
  */
-void Adafruit_MCP23017::setupInterruptPin(uint8_t pin, uint8_t mode) {
+void Adafruit_MCP23017::setupInterruptPin(uint8_t pin, uint8_t mode)
+{
 
-	// set the pin interrupt control (0 means change, 1 means compare against given value);
-//	updateRegisterBit(pin,(mode!=CHANGE),MCP23017_INTCONA,MCP23017_INTCONB);
-	// if the mode is not CHANGE, we need to set up a default value, different value triggers interrupt
+    // set the pin interrupt control (0 means change, 1 means compare against given value);
+    //	updateRegisterBit(pin,(mode!=CHANGE),MCP23017_INTCONA,MCP23017_INTCONB);
+    // if the mode is not CHANGE, we need to set up a default value, different value triggers interrupt
 
-	// In a RISING interrupt the default value is 0, interrupt is triggered when the pin goes to 1.
-	// In a FALLING interrupt the default value is 1, interrupt is triggered when pin goes to 0.
-//	updateRegisterBit(pin,(mode==FALLING),MCP23017_DEFVALA,MCP23017_DEFVALB);
+    // In a RISING interrupt the default value is 0, interrupt is triggered when the pin goes to 1.
+    // In a FALLING interrupt the default value is 1, interrupt is triggered when pin goes to 0.
+    //	updateRegisterBit(pin,(mode==FALLING),MCP23017_DEFVALA,MCP23017_DEFVALB);
 
-	// enable the pin for interrupt
-//	updateRegisterBit(pin,HIGH,MCP23017_GPINTENA,MCP23017_GPINTENB);
-
+    // enable the pin for interrupt
+    //	updateRegisterBit(pin,HIGH,MCP23017_GPINTENA,MCP23017_GPINTENB);
 }
 
-uint8_t Adafruit_MCP23017::getLastInterruptPin(){
-	uint8_t intf;
+uint8_t Adafruit_MCP23017::getLastInterruptPin()
+{
+    uint8_t intf;
 
-	// try port A
-	intf=readRegister(MCP23017_INTFA);
-	for(int i=0;i<8;i++) if (bitRead(intf,i)) return i;
+    // try port A
+    intf = readRegister(MCP23017_INTFA);
+    for (int i = 0; i < 8; i++)
+        if (bitRead(intf, i))
+            return i;
 
-	// try port B
-	intf=readRegister(MCP23017_INTFB);
-	for(int i=0;i<8;i++) if (bitRead(intf,i)) return i+8;
+    // try port B
+    intf = readRegister(MCP23017_INTFB);
+    for (int i = 0; i < 8; i++)
+        if (bitRead(intf, i))
+            return i + 8;
 
-	return MCP23017_INT_ERR;
-
+    return MCP23017_INT_ERR;
 }
-uint8_t Adafruit_MCP23017::getLastInterruptPinValue(){
-	uint8_t intPin=getLastInterruptPin();
-	if(intPin!=MCP23017_INT_ERR){
-		uint8_t intcapreg=regForPin(intPin,MCP23017_INTCAPA,MCP23017_INTCAPB);
-		uint8_t bit=bitForPin(intPin);
-		return (readRegister(intcapreg)>>bit) & (0x01);
-	}
-
-	return MCP23017_INT_ERR;
-}
-
-    esp_err_t Adafruit_MCP23017::init(gpio_num_t sda, gpio_num_t scl, int address, int freq, i2c_port_t portnumber)
+uint8_t Adafruit_MCP23017::getLastInterruptPinValue()
+{
+    uint8_t intPin = getLastInterruptPin();
+    if (intPin != MCP23017_INT_ERR)
     {
-        
-        _sda =sda;
-        _scl = scl;
-        _freq = freq;
-        _address = address;
-        ESP_LOGI("Test", "Starting Initiation");
-        esp_err_t result = i2c_master_init();
-        if (result != ESP_OK)
-        {
-                ESP_LOGI("Test", "Failed to Init I2C connection  ");
-        }
-        ESP_LOGI("Test", "completed ");
-		 	 writeRegister(MCP23017_IODIRA,0x00);
- 			 writeRegister(MCP23017_IODIRB,0x00);
-        _status = result;
-        return result;
+        uint8_t intcapreg = regForPin(intPin, MCP23017_INTCAPA, MCP23017_INTCAPB);
+        uint8_t bit = bitForPin(intPin);
+        return (readRegister(intcapreg) >> bit) & (0x01);
     }
 
-	esp_err_t Adafruit_MCP23017::i2c_master_init()
+    return MCP23017_INT_ERR;
+}
+
+esp_err_t Adafruit_MCP23017::init(gpio_num_t sda, gpio_num_t scl, uint8_t address, uint32_t freq, i2c_port_t portnumber)
+{
+
+    _sda = sda;
+    _scl = scl;
+    _freq = freq;
+    _address = address;
+	_portNumber = portnumber;
+	
+    ESP_LOGI("Test", "Starting Initiation");
+    esp_err_t result = i2c_master_init();
+    if (result != ESP_OK)
     {
-        ESP_LOGI("Test", "Starting master init  ");
-        i2c_config_t conf;
-        conf.mode = I2C_MODE_MASTER;
-        conf.sda_io_num = _sda;
-        conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
-        conf.scl_io_num = _scl;
-        conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
-        conf.master.clk_speed = _freq;
-        conf.clk_flags = 0;
-        i2c_param_config(_portNumber, &conf);
-        return i2c_driver_install(_portNumber, conf.mode, 0, 0, 0);
-    };
+        ESP_LOGI("Test", "Failed to Init I2C connection  ");
+    }
+    ESP_LOGI("Test", "completed ");
+    writeRegister(MCP23017_IODIRA, 0x00);
+    writeRegister(MCP23017_IODIRB, 0x00);
+    _status = result;
+    return result;
+}
+
+esp_err_t Adafruit_MCP23017::i2c_master_init()
+{
+
+    ESP_LOGI("TEST", "sda 0x%02X, SCL 0x%02X, _freq0x%u , _portnumber  %i, address 0x%02X", _sda, _scl, _freq, _portNumber, _address);
+    ESP_LOGI("Test", "Starting master init  ");
+    i2c_config_t conf;
+    conf.mode = I2C_MODE_MASTER;
+    conf.sda_io_num = _sda;
+    conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
+    conf.scl_io_num = _scl;
+    conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
+    conf.master.clk_speed = _freq;
+    conf.clk_flags = 0;
+    i2c_param_config(_portNumber, &conf);
+
+    esp_err_t result = i2c_driver_install(_portNumber, conf.mode, 0, 0, 0);
+    ESP_LOGI("TEST", " Result of intall :   %s", esp_err_to_name(result));
+    return result;
+};
