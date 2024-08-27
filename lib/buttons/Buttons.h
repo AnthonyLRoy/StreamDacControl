@@ -2,7 +2,7 @@
 #include "controls.h"
 #include "driver\gpio.h"
 
-namespace streamerControls
+namespace sourceTypes
 {
     class GenericButton : public controlLibrary::control
     {

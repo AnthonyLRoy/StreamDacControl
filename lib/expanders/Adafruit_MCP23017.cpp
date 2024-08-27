@@ -389,9 +389,9 @@ esp_err_t Adafruit_MCP23017::i2c_master_init()
     conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
     conf.master.clk_speed = _freq;
     conf.clk_flags = 0;
-    i2c_param_config(_portNumber, &conf);
+    i2c_param_config(I2C_NUM_0, &conf);
 
-    esp_err_t result = i2c_driver_install(_portNumber, conf.mode, 0, 0, 0);
+    esp_err_t result = i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0);
     ESP_LOGI("TEST", " Result of intall :   %s", esp_err_to_name(result));
     return result;
 };

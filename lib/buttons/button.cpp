@@ -1,6 +1,6 @@
 
 #include "button.h"
-namespace streamerControls
+namespace sourceTypes
 {
     GenericButton::GenericButton(std::string name, controlLibrary::eventName eventManaged, gpio_int_type_t eventType){};
 
