@@ -60,7 +60,12 @@ uint8_t Adafruit_MCP23017::readRegister(uint8_t addr)
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (MCP23017_ADDRESS << 1) | I2C_MASTER_READ, 1 /* expect ack */);
     uint8_t tmpByte;
-    i2c_master_read_byte(cmd, &tmpByte, I2C_MASTER_NACK);
+    esp_err_t returnval =  i2c_master_read_byte(cmd, &tmpByte, I2C_MASTER_NACK);
+    if (returnval != ESP_OK)
+    {
+        ESP_LOGW("READ REG","Failed to read the register %s ",esp_err_to_name(returnval));
+
+    };
     i2c_master_cmd_begin(I2C_NUM_0, cmd, 0);
     i2c_cmd_link_delete(cmd);
     return tmpByte;
@@ -395,3 +400,6 @@ esp_err_t Adafruit_MCP23017::i2c_master_init()
     ESP_LOGI("TEST", " Result of intall :   %s", esp_err_to_name(result));
     return result;
 };
+
+
+

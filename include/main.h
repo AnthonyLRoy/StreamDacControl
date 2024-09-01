@@ -8,13 +8,12 @@
 #include "driver\gpio.h"
 
 
-class main final
-{
-    public:
-        void run();
-        esp_err_t init_controls();
-        esp_err_t RegisterEvents();
-};
+ class main 
+ {
+     public:
+         void app_main();
+
+ };
 
 
 

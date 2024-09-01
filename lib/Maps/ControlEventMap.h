@@ -6,7 +6,6 @@
 
 namespace maps
 {
-
     class EventMap
     {
     public:
@@ -26,8 +25,6 @@ namespace maps
         // Deleting copy operations
         EventMap(const EventMap&) = delete;
         EventMap& operator=(const EventMap&) = delete;
-
-   
     };
 
     class EventMaps
@@ -39,5 +36,4 @@ namespace maps
      private:
         std::unordered_map<uint16_t, EventMap> map;
     };
-
 } // namespace maps

@@ -47,9 +47,7 @@ public:
     i2c_port_t _portNumber;
     esp_err_t  _status = 0x0;
 
- 
-
-  uint8_t bitForPin(uint8_t pin);
+   uint8_t bitForPin(uint8_t pin);
   uint8_t regForPin(uint8_t pin, uint8_t portAaddr, uint8_t portBaddr);
 
   uint8_t readRegister(uint8_t addr);
