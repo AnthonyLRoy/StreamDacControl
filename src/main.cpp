@@ -1,28 +1,16 @@
-
-
-
 #include "main.h"
 #include "Expander23018.h"
 #include "handlers.h"
 #include "driver/i2c.h"
 #include "esp_log.h"
 #include "I2Cbus.hpp"
+#include "driver/gpio.h"
 #include <string>
-
-#define MCP23017_IODIRA 0x00   // I/O Direction Register A
-#define MCP23017_IODIRB 0x01   // I/O Direction Register B
-#define MCP23017_GPIOA 0x12    // GPIO Register A
-#define MCP23017_GPIOB 0x13    // GPIO Register B
-#define MCP23017_GPINTENA 17 // Interrupt Enable Register A
-#define MCP23017_GPINTENB 18 // Interrupt Enable Register B
-#define MCP23018_OLAT 0x14
 #define TAG "MCP"
-
 
 extern "C" void app_main(void)
 {
     static main myMain;
-
     // esp_event_loop_create_default();
     nvs_flash_init();
     gpio_install_isr_service(0);
@@ -32,11 +20,10 @@ extern "C" void app_main(void)
 void main::run()
 {
 
-        printf(">I2Cbus Example \n");
+    printf(">I2Cbus Example \n");
     fflush(stdout);
-
     I2C_t& myI2C = i2c0;  // i2c0 and i2c1 are the default objects
-    
+    gpio_set_level(GPIO_NUM_48,1);
     ESP_ERROR_CHECK( myI2C.begin(GPIO_NUM_17, GPIO_NUM_18, 100000));
     myI2C.setTimeout(10);
     myI2C.scanner();
@@ -46,6 +33,7 @@ void main::run()
     myI2C.writeByte(MCP23017_ADDRESS,MCP23017_IODIRA,0x00);
     myI2C.writeByte(MCP23017_ADDRESS,MCP23017_IODIRB,0x00);
 
+
     myI2C.writeByte(MCP23017_ADDRESS,MCP23017_OLATB,0xff);
     myI2C.writeByte(MCP23017_ADDRESS,MCP23017_OLATA,0xff);
 
@@ -54,12 +42,14 @@ void main::run()
 
     uint8_t cnt =0;
     while (1) {
-
+   gpio_set_level(GPIO_NUM_48,1);
 
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     myI2C.writeByte(MCP23017_ADDRESS,MCP23017_OLATB,0xff);
     myI2C.writeByte(MCP23017_ADDRESS,MCP23017_OLATA,0xff);
+     gpio_set_level(GPIO_NUM_48,0);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
+              
         myI2C.writeByte(MCP23017_ADDRESS,MCP23017_OLATB,0x00);
     myI2C.writeByte(MCP23017_ADDRESS,MCP23017_OLATA,0x00); 
         
