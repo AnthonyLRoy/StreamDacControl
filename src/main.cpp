@@ -23,6 +23,7 @@ void main::run()
     printf(">I2Cbus Example \n");
     fflush(stdout);
     I2C_t& myI2C = i2c0;  // i2c0 and i2c1 are the default objects
+    gpio_set_direction(GPIO_NUM_48,GPIO_MODE_OUTPUT);
     gpio_set_level(GPIO_NUM_48,1);
     ESP_ERROR_CHECK( myI2C.begin(GPIO_NUM_17, GPIO_NUM_18, 100000));
     myI2C.setTimeout(10);
@@ -49,7 +50,7 @@ void main::run()
     myI2C.writeByte(MCP23017_ADDRESS,MCP23017_OLATA,0xff);
      gpio_set_level(GPIO_NUM_48,0);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
-              
+              gpio_set_level(GPIO_NUM_48,1);   
         myI2C.writeByte(MCP23017_ADDRESS,MCP23017_OLATB,0x00);
     myI2C.writeByte(MCP23017_ADDRESS,MCP23017_OLATA,0x00); 
         

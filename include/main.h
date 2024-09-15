@@ -11,7 +11,8 @@
  class main 
  {
      public:
-         void run();
+     void app_main();
+        void run();
 
  };
 
