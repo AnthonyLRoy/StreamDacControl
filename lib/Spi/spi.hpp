@@ -34,5 +34,6 @@ namespace spibus
             ~SPI();
             void spi_init(gpio_num_t sdi, gpio_num_t clck);
             void spi_send_only(uint16_t data);
+            void pulseLatchEnable(gpio_num_t gpioPin);
     };
 }
