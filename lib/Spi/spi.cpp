@@ -52,7 +52,7 @@ namespace spibus
         spi_transaction_t t;
         memset(&t, 0, sizeof(t));      // Zero out the transaction structure
         uint16_t tx_data = dataToSend; // Example data to send (0x55)
-        t.length = 8;                  // Transaction length in bits
+        t.length = 16;                  // Transaction length in bits
         t.tx_buffer = &tx_data;        // Pointer to data to send
 
         // Perform the SPI transaction (send-only)

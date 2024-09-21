@@ -27,7 +27,7 @@ namespace spibus
         private:
             gpio_num_t sdo;
             gpio_num_t sco;
-            spi_device_handle_t spi;
+           // spi_device_handle_t spi;
 
         public:
             explicit SPI(spi_host_device_t api_host);
