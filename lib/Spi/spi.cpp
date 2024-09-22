@@ -6,6 +6,7 @@ SPI_t spi2 = spibus::SPI(SPI2_HOST);
 
 namespace spibus
 {
+   
     spi_device_handle_t spi;
     gpio_num_t sdo;
     gpio_num_t clk;
@@ -33,25 +34,28 @@ namespace spibus
 
         // Configuration for the SPI device
         spi_device_interface_config_t devcfg = {
+                                    .mode = 0,
             .clock_speed_hz = 1 * 1000 * 1000, // 1 MHz clock speed
-
-            // CS pin
+            .spics_io_num = -1,
             .queue_size = 1,
+ 
         };
 
         // Attach the SPI device to the SPI bus
         ret = spi_bus_add_device(host, &devcfg, &spi);
         ESP_ERROR_CHECK(ret);
+        
     }
 
-    void SPI::spi_send_only(uint16_t dataToSend)
+    void SPI::
+    spi_send_only(uint16_t dataToSend)
     {
         esp_err_t ret;
 
         // Create a transaction to send data (no receive buffer)
         spi_transaction_t t;
         memset(&t, 0, sizeof(t));      // Zero out the transaction structure
-        uint16_t tx_data = dataToSend; // Example data to send (0x55)
+        uint16_t tx_data = dataToSend; // data
         t.length = 16;                  // Transaction length in bits
         t.tx_buffer = &tx_data;        // Pointer to data to send
 
@@ -61,11 +65,11 @@ namespace spibus
 
         ESP_LOGI(TAG, "Data sent: 0x%x", tx_data);
     }
-    void SPI::pulseLatchEnable(gpio_num_t gpioPin)
+    void SPI::pulseLatchEnable(gpio_num_t gpio_latch_pin)
     {
-            gpio_set_level(gpioPin, 1);
-            vTaskDelay(1 / portTICK_PERIOD_MS);
-            gpio_set_level(gpioPin, 0);
+            gpio_set_level(gpio_latch_pin, 1);
+            ets_delay_us(10);;
+            gpio_set_level(gpio_latch_pin, 0);
     }
     SPI::SPI(spi_host_device_t spi_host)
     {

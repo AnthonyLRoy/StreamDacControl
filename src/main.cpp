@@ -18,10 +18,9 @@
 #define PIN_ON_LED GPIO_NUM_3
 #define PIN_STANBY_LED GPIO_NUM_46
 
-#define PIN_NUM_MISO -1             // No MISO (receive-only slave)
-#define PIN_NUM_MOSI 7              // SPI MOSI
-#define PIN_NUM_CLK 6               // SPI Clock
 #define PIN_LATCH_ENABLE GPIO_NUM_5 // Chip Select (CS)
+
+#define PIN_ENABLE_I2C GPIO_NUM_17
 
 extern "C" void app_main(void)
 {
@@ -42,8 +41,6 @@ void main::run()
 
     // indicator leds
     gpio_set_direction(PIN_APP_ACTIVE_LED, GPIO_MODE_OUTPUT);
-    gpio_set_direction(GPIO_NUM_17, GPIO_MODE_OUTPUT);
-    gpio_set_level(GPIO_NUM_17, 1);
     gpio_set_direction(PIN_ON_LED, GPIO_MODE_OUTPUT);
     gpio_set_direction(PIN_STANBY_LED, GPIO_MODE_OUTPUT);
 
@@ -58,13 +55,16 @@ void main::run()
 
     gpio_set_direction(PIN_SPI_SDO, GPIO_MODE_OUTPUT);
     gpio_set_direction(PIN_SPI_CLK, GPIO_MODE_OUTPUT);
-
+    
+    gpio_set_direction(PIN_LATCH_ENABLE, GPIO_MODE_OUTPUT);
+   gpio_set_direction(GPIO_NUM_17, GPIO_MODE_OUTPUT);
+    gpio_set_level(GPIO_NUM_17, 1);
     mySPI.spi_init(PIN_SPI_SDO, PIN_SPI_CLK);
 
-  esp_rom_gpio_pad_select_gpio(PIN_LATCH_ENABLE);
- 
-    gpio_set_direction(PIN_LATCH_ENABLE,GPIO_MODE_OUTPUT);
-    gpio_set_level(PIN_LATCH_ENABLE,1);
+    esp_rom_gpio_pad_select_gpio(PIN_LATCH_ENABLE);
+
+
+    gpio_set_level(PIN_LATCH_ENABLE, 0);
 
     uint8_t buffer[1] = {0x1};
     uint8_t cntr = 0;
@@ -78,7 +78,7 @@ void main::run()
 
         // test write to spi connection
 
-        mySPI.spi_send_only(0xffff);
+        mySPI.spi_send_only(0xAAAA);
         mySPI.pulseLatchEnable(PIN_LATCH_ENABLE);
 
         // standby leds
@@ -105,6 +105,9 @@ void main::run()
         // swap leds
         gpio_set_level(PIN_STANBY_LED, 1);
         gpio_set_level(PIN_ON_LED, 0);
+
+        mySPI.spi_send_only(0x5555);
+        mySPI.pulseLatchEnable(PIN_LATCH_ENABLE);
 
         vTaskDelay(500 / portTICK_PERIOD_MS);
     }

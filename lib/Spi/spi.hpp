@@ -26,10 +26,11 @@ namespace spibus
     {
         private:
             gpio_num_t sdo;
-            gpio_num_t sco;
-           // spi_device_handle_t spi;
+            gpio_num_t clk;
+          
 
         public:
+            spi_device_handle_t spi;
             explicit SPI(spi_host_device_t api_host);
             ~SPI();
             void spi_init(gpio_num_t sdi, gpio_num_t clck);
