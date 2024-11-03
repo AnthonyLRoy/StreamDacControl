@@ -9,6 +9,7 @@
 #include "driver/ledc.h"
 #include "driver\ledc.h"
 #include "led.hpp"
+#include "Serial.hpp"
 
 #define PIN_APP_ACTIVE_LED GPIO_NUM_48
 #define PIN_SPI_SDO GPIO_NUM_7
@@ -34,6 +35,13 @@
 #define LEDC_DUTY (4096)                // Set duty to 50%. (2 ** 13) * 50% = 4096
 #define LEDC_FREQUENCY (4000)           // Frequency in Hertz. Set frequency at 4 kHz
 
+
+#define  UART_NUM UART_NUM_2
+#define  PIN_SERIAL_TX  GPIO_NUM_4
+#define  PIN_SERIAL_RX GPIO_NUM_36
+#define  SERIAL_BUFFER_SIZE 1024
+
+
 extern "C" void app_main(void)
 {
     static main myMain;
@@ -51,7 +59,9 @@ void main::run()
     I2C_t &myI2C = i2c0; // i2c0 and i2c1 are the default objects
     SPI_t &mySPI = spi2;
     led::LED led;
+    led::LED onLed;
 
+    serialbus::SERIAL mySerial;
 
 //set Application Active Led Indicator
 
@@ -72,6 +82,7 @@ void main::run()
         .hpoint = 0};
 
     led.init(ledc_timer, ledc_channel);
+    onLed.init()
 
 
     // power indicator leds
@@ -101,6 +112,11 @@ void main::run()
     uint8_t buffer[1] = {0x1};
     uint8_t cntr = 0;
 
+    //Add Serial bus
+
+    mySerial.init_uart(9600,UART_NUM,SERIAL_BUFFER_SIZE ,PIN_SERIAL_TX,PIN_SERIAL_RX);
+    // loop to test board
+    
     while (1)
     {
 
@@ -121,6 +137,10 @@ void main::run()
         // standby leds
         gpio_set_level(PIN_STANBY_LED, 0);
         gpio_set_level(PIN_ON_LED, 1);
+
+        //Write to serial bus
+        const char* memo = "aa;ab;cd;efhh;";
+        mySerial.send_data( memo);
 
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
@@ -150,6 +170,14 @@ void main::run()
 
         led.setDuty(LEDC_MODE, LEDC_CHANNEL, LEDC_DUTY / 4);
         led.updateDuty(LEDC_MODE, LEDC_CHANNEL);
+        uint8_t readdata[SERIAL_BUFFER_SIZE];
+        char buffer[64] = {'\0'};
+        int len = mySerial.read_data( buffer,sizeof(buffer) -1);
+
+  
+        if (len > 0) {
+            ESP_LOGI(TAG, "Received: %.*s", len, buffer);
+        }
 
         vTaskDelay(500 / portTICK_PERIOD_MS);
 
