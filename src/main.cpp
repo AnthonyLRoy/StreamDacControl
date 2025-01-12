@@ -12,21 +12,31 @@
 #include "Serial.hpp"
 
 #define PIN_APP_ACTIVE_LED GPIO_NUM_48
+
+
+// spi Connections
 #define PIN_SPI_SDO GPIO_NUM_7
 #define PIN_SPI_CLK GPIO_NUM_6
-
+#define PIN_LATCH_ENABLE GPIO_NUM_5 // Chip Select (CS)
 #define HSPI_HOST SPI2_HOST
 #define TAG "MCP"
 
-#define PIN_ON_LED GPIO_NUM_3
-#define PIN_STANBY_LED GPIO_NUM_46
 
-#define PIN_LATCH_ENABLE GPIO_NUM_5 // Chip Select (CS)
+// Off Board Status Indicators
 
-#define PIN_ENABLE_I2C GPIO_NUM_17
+#define PIN_ON_LED GPIO_NUM_4
+#define PIN_STANBY_LED GPIO_NUM_3
+
+// I2C   connections
+
+#define I2C_CLK_SPEED_HZ 50000
 #define PIN_I2C_SDA GPIO_NUM_16
 #define PIN_I2C_CLK GPIO_NUM_15
-#define I2C_CLK_SPEED_HZ 50000
+#define PIN_I2C_ENABLE GPIO_NUM_17
+
+// SPI connections
+
+#define PIN_LATCH_ENABLE GPIO_NUM_5 // Chip Select (CS)
 
 #define LEDC_TIMER LEDC_TIMER_0
 #define LEDC_MODE LEDC_LOW_SPEED_MODE
@@ -35,10 +45,11 @@
 #define LEDC_DUTY (4096)                // Set duty to 50%. (2 ** 13) * 50% = 4096
 #define LEDC_FREQUENCY (4000)           // Frequency in Hertz. Set frequency at 4 kHz
 
+// Serial Port Connections
 
 #define  UART_NUM UART_NUM_2
-#define  PIN_SERIAL_TX  GPIO_NUM_4
-#define  PIN_SERIAL_RX GPIO_NUM_36
+#define  PIN_SERIAL_TX  GPIO_NUM_2 
+#define  PIN_SERIAL_RX GPIO_NUM_1
 #define  SERIAL_BUFFER_SIZE 1024
 
 
@@ -82,7 +93,7 @@ void main::run()
         .hpoint = 0};
 
     led.init(ledc_timer, ledc_channel);
-    onLed.init()
+   // onLed.init();
 
 
     // power indicator leds
@@ -90,6 +101,9 @@ void main::run()
     gpio_set_direction(PIN_ON_LED, GPIO_MODE_OUTPUT);
     gpio_set_direction(PIN_STANBY_LED, GPIO_MODE_OUTPUT);
 
+
+    gpio_set_direction(PIN_I2C_ENABLE, GPIO_MODE_OUTPUT);
+    gpio_set_level(PIN_I2C_ENABLE, 1);
     // Test I2C connection and scan for Channel
 
     ESP_ERROR_CHECK(myI2C.begin(PIN_I2C_SDA, PIN_I2C_CLK, I2C_CLK_SPEED_HZ));
@@ -102,8 +116,10 @@ void main::run()
     gpio_set_direction(PIN_SPI_SDO, GPIO_MODE_OUTPUT);
     gpio_set_direction(PIN_SPI_CLK, GPIO_MODE_OUTPUT);
     gpio_set_direction(PIN_LATCH_ENABLE, GPIO_MODE_OUTPUT);
-    gpio_set_direction(PIN_ENABLE_I2C, GPIO_MODE_OUTPUT);
-    gpio_set_level(PIN_ENABLE_I2C, 1);
+
+// setup I2C
+
+
 
     mySPI.spi_init(PIN_SPI_SDO, PIN_SPI_CLK);
     esp_rom_gpio_pad_select_gpio(PIN_LATCH_ENABLE);
